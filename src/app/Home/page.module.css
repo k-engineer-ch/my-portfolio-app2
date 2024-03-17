@@ -1,0 +1,26 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	margin: 30px 30px;
+}
+
+.contents {
+	display: flex;
+	flex-direction: row;
+}
+
+.content {
+	display: flex;
+}
+
+.expensePieChart {
+	display: flex;
+	justify-content: center;
+	width: 50%;
+}
+
+.expenseRegister {
+	display: flex;
+	justify-content: center;
+	width: 50%;
+}
