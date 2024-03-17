@@ -1,0 +1,14 @@
+.container {
+	display: flex;
+	height: 100%;
+	margin: 30px 30px;
+}
+
+.contents {
+	display: flex;
+	flex-direction: row;
+}
+
+.content {
+	display: flex;
+}

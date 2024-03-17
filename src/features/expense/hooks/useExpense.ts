@@ -116,13 +116,13 @@ export const useExpense = () => {
 	useEffect(() => {
 		getExpensesDateForLocalStrage();
 
-		// コンポーネントがマウントされたときの処理
-		console.log("Component mounted");
+		// // コンポーネントがマウントされたときの処理
+		// console.log("Component mounted");
 
-		// cleanup 関数
-		return () => {
-			console.log("Component unmounted");
-		};
+		// // cleanup 関数
+		// return () => {
+		// 	console.log("Component unmounted");
+		// };
 	}, []);
 
 	return {

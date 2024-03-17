@@ -13,16 +13,16 @@ const Header = () => {
 					<nav className={styles.nav}>
 						<ul>
 							<li>
-								<Link href="/Home">ホーム</Link>
+								<Link href="/home">ホーム</Link>
 							</li>
 							<li>
-								<Link href="/">家計簿</Link>
+								<Link href="/cashflow">家計簿</Link>
 							</li>
 							<li>
-								<Link href="/">レポート</Link>
+								<Link href="/analysis">レポート</Link>
 							</li>
 							<li>
-								<Link href="/">設定</Link>
+								<Link href="/profile">設定</Link>
 							</li>
 						</ul>
 					</nav>
