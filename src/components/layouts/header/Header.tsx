@@ -15,7 +15,7 @@ const Header = () => {
 							<li>
 								<Link href="/home">ホーム</Link>
 							</li>
-							<li>
+							{/* <li>
 								<Link href="/cashflow">家計簿</Link>
 							</li>
 							<li>
@@ -23,7 +23,7 @@ const Header = () => {
 							</li>
 							<li>
 								<Link href="/profile">設定</Link>
-							</li>
+							</li> */}
 						</ul>
 					</nav>
 				</div>

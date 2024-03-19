@@ -30,6 +30,8 @@ const ExpenseList: React.FC<Props> = ({ expenses }) => {
 								<span>{CategoryJapaneseMap[expense.category]}</span>
 								<span>{expense.memo}</span>
 								<span>{expense.amount.toLocaleString()}</span>
+								<button>編集</button>
+								<button>削除</button>
 							</div>
 						))
 					) : (

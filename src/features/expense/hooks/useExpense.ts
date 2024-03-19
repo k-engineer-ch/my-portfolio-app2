@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExpenseItem, ExpensePieChartData } from "../types/ExpenseItem";
+import { ExpenseItem, ExpensePieChartData, ExpenseData } from "../types/ExpenseItem";
 import { CategoryJapaneseMap } from "@/constants/ExpenseCategories";
 
 export const useExpense = () => {
@@ -113,8 +113,53 @@ export const useExpense = () => {
 		getExpensesDateForLocalStrage();
 	};
 
+	const url = "http://localhost:8080/v1/";
+	const getAllExpenses = async () => {
+		await fetch(url + "getAllExpenses")
+			.then((response) => response.json())
+			.then((json) => {
+				const formattedData = json.data.map((item: ExpenseItem) => ({
+					date: new Date(item.date).toISOString().split("T")[0], // 日付の整形
+					amount: parseInt(item.amount.toString()),
+					category: item.category,
+					memo: item.memo,
+					// amount: parseFloat(item.amount.toString()).toLocaleString("ja-JP", {
+					// 	style: "currency",
+					// 	currency: "JPY",
+					// }), // 金額のフォーマット
+				}));
+				setExpenses(formattedData);
+
+				// const parsedExpenses: ExpensePieChartData[] = JSON.parse(formattedData);
+				const categoryMap = new Map<string, number>();
+
+				formattedData.forEach((expense: ExpensePieChartData) => {
+					const category = expense.category;
+					const amount = expense.amount;
+					console.log(category);
+					console.log(amount);
+					if (categoryMap.has(category)) {
+						categoryMap.set(
+							CategoryJapaneseMap[category],
+							categoryMap.get(category)! + amount
+						);
+					} else {
+						categoryMap.set(CategoryJapaneseMap[category], amount);
+					}
+				});
+
+				const newData: [[string, string | number]] = [["Category", "Expense Rate"]];
+				categoryMap.forEach((value, key) => {
+					newData.push([key, value]);
+				});
+				setExpenseData(newData);
+			})
+			.catch((error) => console.error("Error:", error));
+	};
+
 	useEffect(() => {
-		getExpensesDateForLocalStrage();
+		// getExpensesDateForLocalStrage();
+		getAllExpenses();
 
 		// // コンポーネントがマウントされたときの処理
 		// console.log("Component mounted");
@@ -133,5 +178,6 @@ export const useExpense = () => {
 		setAmount,
 		registerExpense,
 		getExpensesDateForLocalStrage,
+		getAllExpenses,
 	};
 };

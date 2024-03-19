@@ -27,3 +27,21 @@
 .item:nth-child(even) {
 	background-color: #f0f0f0;
 }
+
+.item button {
+	background-color: #007bff;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	padding: 5px 10px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.item button:hover {
+	background-color: #0056b3;
+}
+
+.item button + button {
+	margin-left: 5px;
+}
