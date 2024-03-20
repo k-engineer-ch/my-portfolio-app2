@@ -14,6 +14,13 @@ export const useExpense = () => {
 		memo: "",
 	});
 
+	const [updateExpense, setUpdateExpense] = useState<ExpenseItem>({
+		date: today,
+		amount: 0,
+		category: "food",
+		memo: "",
+	});
+
 	/**
 	 * 支出データを保持
 	 */
@@ -86,31 +93,65 @@ export const useExpense = () => {
 		}));
 	};
 
+	const setUpdateValue = (value: ExpenseItem) => {
+		setUpdateExpense({
+			...updateExpense,
+			date: value.date,
+			amount: value.amount,
+			category: value.category,
+			memo: value.memo,
+		});
+	};
+
 	/**
 	 * ローカルストレージに支出を保存
 	 */
 	const registerExpense = () => {
-		if (typeof localStorage !== "undefined") {
-			const existingExpenses = localStorage.getItem("expenses");
-			if (existingExpenses) {
-				const parsedExpenses: ExpenseItem[] = JSON.parse(existingExpenses);
-				const updatedExpenses = [...parsedExpenses, expense];
-				localStorage.setItem("expenses", JSON.stringify(updatedExpenses));
-			} else {
-				localStorage.setItem("expenses", JSON.stringify([expense]));
-			}
-		} else {
-			console.error("Local storage is not supported.");
-		}
+		// if (typeof localStorage !== "undefined") {
+		// 	const existingExpenses = localStorage.getItem("expenses");
+		// 	if (existingExpenses) {
+		// 		const parsedExpenses: ExpenseItem[] = JSON.parse(existingExpenses);
+		// 		const updatedExpenses = [...parsedExpenses, expense];
+		// 		localStorage.setItem("expenses", JSON.stringify(updatedExpenses));
+		// 	} else {
+		// 		localStorage.setItem("expenses", JSON.stringify([expense]));
+		// 	}
+		// } else {
+		// 	console.error("Local storage is not supported.");
+		// }
+		fetch("http://localhost:8080/v1/addExpense", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				date: expense.date,
+				amount: expense.amount.toString(),
+				category: expense.category,
+				memo: expense.memo,
+			}),
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log(data);
 
-		setExpense({
-			date: today,
-			amount: 0,
-			category: "food",
-			memo: "",
-		});
+				setExpense({
+					date: today,
+					amount: 0,
+					category: "food",
+					memo: "",
+				});
 
-		getExpensesDateForLocalStrage();
+				getAllExpenses();
+			})
+			.catch((error) => {
+				console.error("There was a problem with the fetch operation:", error);
+			});
 	};
 
 	const url = "http://localhost:8080/v1/";
@@ -128,29 +169,30 @@ export const useExpense = () => {
 					// 	currency: "JPY",
 					// }), // 金額のフォーマット
 				}));
-				setExpenses(formattedData);
 
-				// const parsedExpenses: ExpensePieChartData[] = JSON.parse(formattedData);
+				const sortedData = formattedData.sort(
+					(a: { date: string | number | Date }, b: { date: string | number | Date }) => {
+						// aとbの日付を比較して新しい順に並び替える
+						return new Date(b.date).getTime() - new Date(a.date).getTime();
+					}
+				);
+
+				setExpenses(sortedData);
+
 				const categoryMap = new Map<string, number>();
-
 				formattedData.forEach((expense: ExpensePieChartData) => {
 					const category = expense.category;
 					const amount = expense.amount;
-					console.log(category);
-					console.log(amount);
 					if (categoryMap.has(category)) {
-						categoryMap.set(
-							CategoryJapaneseMap[category],
-							categoryMap.get(category)! + amount
-						);
+						categoryMap.set(category, categoryMap.get(category)! + amount);
 					} else {
-						categoryMap.set(CategoryJapaneseMap[category], amount);
+						categoryMap.set(category, amount);
 					}
 				});
 
 				const newData: [[string, string | number]] = [["Category", "Expense Rate"]];
 				categoryMap.forEach((value, key) => {
-					newData.push([key, value]);
+					newData.push([CategoryJapaneseMap[key], value]);
 				});
 				setExpenseData(newData);
 			})
@@ -172,10 +214,12 @@ export const useExpense = () => {
 
 	return {
 		expense,
+		updateExpense,
 		expenses,
 		expenseData,
 		setInputValue,
 		setAmount,
+		setUpdateValue,
 		registerExpense,
 		getExpensesDateForLocalStrage,
 		getAllExpenses,
